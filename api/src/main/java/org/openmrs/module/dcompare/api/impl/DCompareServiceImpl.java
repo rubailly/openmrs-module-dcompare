@@ -13,11 +13,19 @@
  */
 package org.openmrs.module.dcompare.api.impl;
 
-import org.openmrs.api.impl.BaseOpenmrsService;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.dcompare.api.DCompareService;
 import org.openmrs.module.dcompare.api.db.DCompareDAO;
+import org.openmrs.module.metadatasharing.MetadataSharing;
+import org.openmrs.module.metadatasharing.api.MetadataSharingService;
+import org.openmrs.module.metadatasharing.wrapper.PackageExporter;
 
 /**
  * It is a default implementation of {@link DCompareService}.
@@ -41,4 +49,20 @@ public class DCompareServiceImpl extends BaseOpenmrsService implements DCompareS
     public DCompareDAO getDao() {
 	    return dao;
     }
+
+	@Override
+	public List<Concept> exportPackageWithConcepts(List<Concept> concepts) throws APIException {
+		  PackageExporter exporter = MetadataSharing.getInstance().newPackageExporter();
+		  
+			for (Concept concept : concepts) {
+				exporter.addItem(concept);
+			}
+			exporter.getPackage().setName("DcomparePackage");
+			exporter.getPackage().setDescription("Metadata package created by dcompare module");
+			exporter.exportPackage();
+			
+			Context.getService(MetadataSharingService.class).saveExportedPackage(exporter.getExportedPackage());
+			
+		return concepts;
+	}
 }

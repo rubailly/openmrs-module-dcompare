@@ -13,6 +13,10 @@
  */
 package org.openmrs.module.dcompare.api;
 
+import java.util.List;
+
+import org.openmrs.Concept;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public interface DCompareService extends OpenmrsService {
-     
-	/*
-	 * Add service methods here
+	
+	/**
+	 * Exports a list of concept as a metadata package
 	 * 
+	 * @param concepts concepts to export as metadata package
+	 * @return list of exported Concepts
+	 * @throws APIException
 	 */
+	@Transactional(readOnly = true)
+	List<Concept> exportPackageWithConcepts(List<Concept> concepts) throws APIException;
 }
